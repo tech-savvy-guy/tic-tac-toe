@@ -3,12 +3,12 @@
 export function Footer() {
     return (
         <footer className="fixed bottom-0 left-0 w-full py-3 px-6">
-            <div className="max-w-screen-xl mx-auto flex items-center justify-center gap-3 text-xs text-black/40">
+            <div className="max-w-screen-xl mx-auto flex items-center justify-center gap-3 text-xs text-muted-foreground">
                 <a
                     href="https://sohamdatta.com"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-light tracking-wider hover:text-black transition-colors duration-200"
+                    className="font-light tracking-wider hover:text-foreground transition-colors duration-200"
                 >
                     Soham Datta
                 </a>
@@ -17,7 +17,7 @@ export function Footer() {
                     href="https://v0.dev"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center hover:opacity-75 transition-opacity duration-200"
+                    className="flex items-center hover:text-foreground/75 transition-colors duration-200"
                 >
                     <svg width="20" viewBox="0 0 40 20" fill="currentColor">
                         <path d="M23.3919 0H32.9188C36.7819 0 39.9136 3.13165 39.9136 6.99475V16.0805H36.0006V6.99475C36.0006 6.90167 35.9969 6.80925 35.9898 6.71766L26.4628 16.079C26.4949 16.08 26.5272 16.0805 26.5595 16.0805H36.0006V19.7762H26.5595C22.6964 19.7762 19.4788 16.6139 19.4788 12.7508V3.68923H23.3919V12.7508C23.3919 12.9253 23.4054 13.0977 23.4316 13.2668L33.1682 3.6995C33.0861 3.6927 33.003 3.68923 32.9188 3.68923H23.3919V0Z" />
@@ -30,7 +30,7 @@ export function Footer() {
                     href="https://github.com/tech-savvy-guy/tic-tac-toe"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-light tracking-wider hover:text-black transition-colors duration-200"
+                    className="font-light tracking-wider hover:text-foreground transition-colors duration-200"
                 >
                     GitHub
                 </a>
