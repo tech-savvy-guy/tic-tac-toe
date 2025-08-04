@@ -39,47 +39,53 @@ export function OnlineSetupScreen({
         </div>
 
         <div className="space-y-6">
-          {/* Mode Toggle - Moved to top */}
-          <div className="flex space-x-1 bg-black/5 p-1 rounded">
+          {/* Mode Toggle - Ultra Minimal */}
+          <div className="flex">
             <button
               onClick={() => setOnlineMode("create")}
-              className={`flex-1 py-2 px-4 font-light tracking-wide transition-all duration-200 rounded ${
+              className={`flex-1 py-2 text-sm font-light tracking-wider transition-all duration-200 relative ${
                 onlineMode === "create"
-                  ? "bg-white text-black shadow-sm"
-                  : "text-black/60 hover:text-black hover:bg-white/50"
+                  ? "text-black"
+                  : "text-black/30 hover:text-black/50"
               }`}
             >
               CREATE
+              {onlineMode === "create" && (
+                <div className="absolute -bottom-1 left-1/2 w-4 h-[2px] bg-black/40 transform -translate-x-1/2 transition-all duration-200" />
+              )}
             </button>
             <button
               onClick={() => setOnlineMode("join")}
-              className={`flex-1 py-2 px-4 font-light tracking-wide transition-all duration-200 rounded ${
+              className={`flex-1 py-2 text-sm font-light tracking-wider transition-all duration-200 relative ${
                 onlineMode === "join"
-                  ? "bg-white text-black shadow-sm"
-                  : "text-black/60 hover:text-black hover:bg-white/50"
+                  ? "text-black"
+                  : "text-black/30 hover:text-black/50"
               }`}
             >
               JOIN
+              {onlineMode === "join" && (
+                <div className="absolute -bottom-1 left-1/2 w-4 h-[2px] bg-black/40 transform -translate-x-1/2 transition-all duration-200" />
+              )}
             </button>
           </div>
 
           <div className="space-y-4">
             <input
               type="text"
-              placeholder="Your name"
+              placeholder="YOUR NAME"
               value={playerName}
               onChange={(e) => setPlayerName(e.target.value)}
-              className="w-full py-3 px-0 bg-transparent border-0 border-b border-black/20 focus:border-black outline-none font-light tracking-wide placeholder:text-black/40"
+              className="w-full py-3 px-0 bg-transparent border border-black focus:border-black outline-none font-light tracking-wide placeholder:text-black/40 text-center"
               maxLength={20}
             />
 
             {onlineMode === "join" && (
               <input
                 type="text"
-                placeholder="Room code"
+                placeholder="ROOM CODE"
                 value={joinCode}
                 onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
-                className="w-full py-3 px-0 bg-transparent border-0 border-b border-black/20 focus:border-black outline-none font-light tracking-widest placeholder:text-black/40 text-center"
+                className="w-full py-3 px-0 bg-transparent border border-black focus:border-black outline-none font-light tracking-widest placeholder:text-black/40 text-center"
                 maxLength={6}
               />
             )}

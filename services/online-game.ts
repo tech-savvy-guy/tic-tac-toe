@@ -17,6 +17,7 @@ export class OnlineGameService {
         player1_name: playerName.trim(),
         board: Array(9).fill(null),
         status: "waiting",
+        current_player: "X",
       })
       .select()
       .single()
@@ -74,11 +75,19 @@ export class OnlineGameService {
   }
 
   async resetGame(roomId: string): Promise<void> {
+    const { data: room } = await supabase
+      .from("rooms")
+      .select("current_player")
+      .eq("id", roomId)
+      .single()
+
+    if (!room) return
+
     await supabase
       .from("rooms")
       .update({
         board: Array(9).fill(null),
-        current_player: "X",
+        current_player: room.current_player === "X" ? "O" : "X",
         winner: null,
         status: "playing",
       })

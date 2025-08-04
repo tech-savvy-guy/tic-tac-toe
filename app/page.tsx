@@ -58,29 +58,18 @@ export default function TicTacToe() {
         if (cell === "O") return "O" 
         return null
       })
-      setGameState((prev) => ({ ...prev, board: convertedBoard }))
-    }
 
-    if (updatedRoom.current_player) {
-      setGameState((prev) => ({ ...prev, currentPlayer: updatedRoom.current_player }))
-    }
+      const isReset = convertedBoard.every(cell => cell === null)
+      const gameResult = checkWinner(convertedBoard)
 
-    if (updatedRoom.winner) {
       setGameState((prev) => ({
         ...prev,
-        winner: updatedRoom.winner as Player | "tie",
-        isGameActive: false,
+        board: convertedBoard,
+        currentPlayer: updatedRoom.current_player,
+        winner: isReset ? null : (updatedRoom.winner as Player | "tie" | null),
+        isGameActive: isReset ? true : !updatedRoom.winner,
+        winningLine: isReset ? null : (gameResult.winner ? gameResult.line : prev.winningLine)
       }))
-    }
-
-    const convertedBoard: Board = updatedRoom.board.map(cell => {
-      if (cell === "X") return "X"
-      if (cell === "O") return "O" 
-      return null
-    })
-    const gameResult = checkWinner(convertedBoard)
-    if (gameResult.winner) {
-      setGameState((prev) => ({ ...prev, winningLine: gameResult.line }))
     }
   }, []) // Remove the dependency on onlineState.mode
 
@@ -236,18 +225,21 @@ export default function TicTacToe() {
   const resetGame = async () => {
     if (gameMode === "online" && onlineState.room) {
       try {
+        // For online mode, just reset the game and let the server handle player alternation
         await onlineService.resetGame(onlineState.room.id)
       } catch (error) {
         console.error("Error resetting game:", error)
       }
     } else {
+      // For local and single player modes, toggle the starting player
+      const nextFirstPlayer = gameState.currentPlayer === "X" ? "O" : "X"
       setGameState({
         board: Array(9).fill(null),
-        currentPlayer: "X",
+        currentPlayer: nextFirstPlayer,
         winner: null,
         isGameActive: true,
         winningLine: null,
-        isAiThinking: false,
+        isAiThinking: gameMode === "single" && nextFirstPlayer === "O", // Start AI thinking if AI goes first
       })
     }
   }
