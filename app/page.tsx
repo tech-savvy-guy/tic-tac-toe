@@ -52,7 +52,13 @@ export default function TicTacToe() {
     })
 
     if (updatedRoom.board) {
-      setGameState((prev) => ({ ...prev, board: updatedRoom.board as Board }))
+      // Convert string array from database to Player array for game logic
+      const convertedBoard: Board = updatedRoom.board.map(cell => {
+        if (cell === "X") return "X"
+        if (cell === "O") return "O" 
+        return null
+      })
+      setGameState((prev) => ({ ...prev, board: convertedBoard }))
     }
 
     if (updatedRoom.current_player) {
@@ -67,7 +73,12 @@ export default function TicTacToe() {
       }))
     }
 
-    const gameResult = checkWinner(updatedRoom.board as Board)
+    const convertedBoard: Board = updatedRoom.board.map(cell => {
+      if (cell === "X") return "X"
+      if (cell === "O") return "O" 
+      return null
+    })
+    const gameResult = checkWinner(convertedBoard)
     if (gameResult.winner) {
       setGameState((prev) => ({ ...prev, winningLine: gameResult.line }))
     }

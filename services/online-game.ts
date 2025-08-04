@@ -15,7 +15,7 @@ export class OnlineGameService {
         id: code,
         player1_id: playerId,
         player1_name: playerName.trim(),
-        board: Array(9).fill(""),
+        board: Array(9).fill(null),
         status: "waiting",
       })
       .select()
@@ -58,11 +58,14 @@ export class OnlineGameService {
   async makeMove(roomId: string, board: Board, playerSymbol: Player): Promise<void> {
     const gameResult = checkWinner(board)
     const nextPlayer = playerSymbol === "X" ? "O" : "X"
+    
+    // Convert Board (Player[]) to string[] for database storage
+    const boardForDb = board.map(cell => cell === null ? null : cell)
 
     await supabase
       .from("rooms")
       .update({
-        board: board,
+        board: boardForDb,
         current_player: gameResult.winner ? playerSymbol : nextPlayer,
         winner: gameResult.winner || null,
         status: gameResult.winner ? "finished" : "playing",
@@ -74,7 +77,7 @@ export class OnlineGameService {
     await supabase
       .from("rooms")
       .update({
-        board: Array(9).fill(""),
+        board: Array(9).fill(null),
         current_player: "X",
         winner: null,
         status: "playing",

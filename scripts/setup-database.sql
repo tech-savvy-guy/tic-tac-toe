@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS rooms (
   player1_name VARCHAR(50),
   player2_name VARCHAR(50),
   current_player VARCHAR(1) DEFAULT 'X' CHECK (current_player IN ('X', 'O')),
-  board TEXT[] DEFAULT ARRAY['', '', '', '', '', '', '', '', ''],
+  board TEXT[] DEFAULT ARRAY[NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL],
   winner VARCHAR(10),
   status VARCHAR(20) DEFAULT 'waiting' CHECK (status IN ('waiting', 'playing', 'finished'))
 );
