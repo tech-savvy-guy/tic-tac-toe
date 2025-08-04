@@ -1,103 +1,322 @@
-import Image from "next/image";
+"use client"
 
-export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
+import { useState, useEffect, useCallback } from "react"
+import { MenuScreen } from "@/components/menu-screen"
+import { OnlineSetupScreen } from "@/components/online-setup-screen"
+import { WaitingRoomScreen } from "@/components/waiting-room-screen"
+import { GameScreen } from "@/components/game-screen"
+import { OnlineGameService } from "@/services/online-game"
+import { makeAIMove, checkWinner } from "@/utils/game-logic"
+import type { GameMode, Board, Player, GameState, OnlineState, Room } from "@/types/game"
+
+export default function TicTacToe() {
+  // Game state
+  const [gameState, setGameState] = useState<GameState>({
+    board: Array(9).fill(null),
+    currentPlayer: "X",
+    winner: null,
+    isGameActive: true,
+    winningLine: null,
+    isAiThinking: false,
+  })
+
+  const [gameMode, setGameMode] = useState<GameMode>("menu")
+
+  // Online state
+  const [onlineState, setOnlineState] = useState<OnlineState>({
+    mode: "create",
+    roomCode: "",
+    joinCode: "",
+    playerName: "",
+    room: null,
+    playerId: crypto.randomUUID(),
+    playerSymbol: null,
+    opponentConnected: false,
+    connectionStatus: "disconnected",
+  })
+
+  const [onlineService] = useState(() => new OnlineGameService())
+
+  // Handle room updates from Supabase
+  const handleRoomUpdate = useCallback((updatedRoom: Room) => {
+    setOnlineState((prev) => {
+      const newState = { ...prev, room: updatedRoom }
+
+      // Check if second player joined and we're the host waiting
+      if (updatedRoom.status === "playing" && prev.mode === "waiting" && updatedRoom.player2_id) {
+        newState.mode = "playing"
+        newState.opponentConnected = true
+      }
+
+      return newState
+    })
+
+    if (updatedRoom.board) {
+      setGameState((prev) => ({ ...prev, board: updatedRoom.board as Board }))
+    }
+
+    if (updatedRoom.current_player) {
+      setGameState((prev) => ({ ...prev, currentPlayer: updatedRoom.current_player }))
+    }
+
+    if (updatedRoom.winner) {
+      setGameState((prev) => ({
+        ...prev,
+        winner: updatedRoom.winner as Player | "tie",
+        isGameActive: false,
+      }))
+    }
+
+    const gameResult = checkWinner(updatedRoom.board as Board)
+    if (gameResult.winner) {
+      setGameState((prev) => ({ ...prev, winningLine: gameResult.line }))
+    }
+  }, []) // Remove the dependency on onlineState.mode
+
+  // Handle connection status changes
+  const handleConnectionStatusChange = useCallback((status: string) => {
+    setOnlineState((prev) => ({
+      ...prev,
+      connectionStatus: status === "SUBSCRIBED" ? "connected" : "disconnected",
+    }))
+  }, [])
+
+  // Create room
+  const createRoom = async () => {
+    if (!onlineState.playerName.trim()) return
+
+    setOnlineState((prev) => ({ ...prev, connectionStatus: "connecting" }))
+
+    try {
+      const room = await onlineService.createRoom(onlineState.playerId, onlineState.playerName)
+
+      setOnlineState((prev) => ({
+        ...prev,
+        roomCode: room.id,
+        room,
+        playerSymbol: "X",
+        mode: "waiting",
+      }))
+
+      // Subscribe to room updates
+      onlineService.subscribeToRoom(room.id, handleRoomUpdate, handleConnectionStatusChange)
+
+      console.log("Room created and subscribed:", room.id) // Debug log
+    } catch (error) {
+      console.error("Error creating room:", error)
+      setOnlineState((prev) => ({ ...prev, connectionStatus: "disconnected" }))
+    }
+  }
+
+  // Join room
+  const joinRoom = async () => {
+    if (!onlineState.playerName.trim() || !onlineState.joinCode.trim()) return
+
+    setOnlineState((prev) => ({ ...prev, connectionStatus: "connecting" }))
+
+    try {
+      const room = await onlineService.joinRoom(onlineState.joinCode, onlineState.playerId, onlineState.playerName)
+
+      setOnlineState((prev) => ({
+        ...prev,
+        roomCode: onlineState.joinCode.toUpperCase(),
+        room,
+        playerSymbol: "O",
+        mode: "playing",
+        opponentConnected: true,
+      }))
+
+      onlineService.subscribeToRoom(room.id, handleRoomUpdate, handleConnectionStatusChange)
+    } catch (error) {
+      console.error("Error joining room:", error)
+      alert(error instanceof Error ? error.message : "Failed to join room")
+      setOnlineState((prev) => ({ ...prev, connectionStatus: "disconnected" }))
+    }
+  }
+
+  // Make online move
+  const makeOnlineMove = async (index: number) => {
+    if (!onlineState.room || !onlineState.playerSymbol || gameState.currentPlayer !== onlineState.playerSymbol) return
+
+    const newBoard = [...gameState.board]
+    newBoard[index] = onlineState.playerSymbol
+
+    try {
+      await onlineService.makeMove(onlineState.room.id, newBoard, onlineState.playerSymbol)
+    } catch (error) {
+      console.error("Error making move:", error)
+    }
+  }
+
+  // Handle cell click
+  const handleCellClick = (index: number) => {
+    if (gameState.board[index] || gameState.winner || !gameState.isGameActive) return
+
+    if (gameMode === "online") {
+      makeOnlineMove(index)
+      return
+    }
+
+    // Local game logic
+    if (gameState.isAiThinking) return
+
+    const newBoard = [...gameState.board]
+    newBoard[index] = gameState.currentPlayer
+
+    const gameResult = checkWinner(newBoard)
+    if (gameResult.winner) {
+      setGameState((prev) => ({
+        ...prev,
+        board: newBoard,
+        winner: gameResult.winner,
+        winningLine: gameResult.line,
+        isGameActive: false,
+      }))
+      return
+    }
+
+    if (gameMode === "single" && gameState.currentPlayer === "X") {
+      setGameState((prev) => ({
+        ...prev,
+        board: newBoard,
+        currentPlayer: "O",
+        isAiThinking: true,
+      }))
+    } else if (gameMode === "local") {
+      setGameState((prev) => ({
+        ...prev,
+        board: newBoard,
+        currentPlayer: gameState.currentPlayer === "X" ? "O" : "X",
+      }))
+    }
+  }
+
+  // AI move effect
+  useEffect(() => {
+    if (
+      gameMode === "single" &&
+      gameState.currentPlayer === "O" &&
+      gameState.isGameActive &&
+      !gameState.winner &&
+      gameState.isAiThinking
+    ) {
+      const timer = setTimeout(() => {
+        const aiMove = makeAIMove(gameState.board)
+        const newBoard = [...gameState.board]
+        newBoard[aiMove] = "O"
+
+        const gameResult = checkWinner(newBoard)
+        setGameState((prev) => ({
+          ...prev,
+          board: newBoard,
+          currentPlayer: gameResult.winner ? "O" : "X",
+          winner: gameResult.winner,
+          winningLine: gameResult.line,
+          isGameActive: !gameResult.winner,
+          isAiThinking: false,
+        }))
+      }, 800)
+
+      return () => clearTimeout(timer)
+    }
+  }, [gameMode, gameState])
+
+  // Reset game
+  const resetGame = async () => {
+    if (gameMode === "online" && onlineState.room) {
+      try {
+        await onlineService.resetGame(onlineState.room.id)
+      } catch (error) {
+        console.error("Error resetting game:", error)
+      }
+    } else {
+      setGameState({
+        board: Array(9).fill(null),
+        currentPlayer: "X",
+        winner: null,
+        isGameActive: true,
+        winningLine: null,
+        isAiThinking: false,
+      })
+    }
+  }
+
+  // Back to menu
+  const backToMenu = () => {
+    onlineService.unsubscribe()
+
+    setGameState({
+      board: Array(9).fill(null),
+      currentPlayer: "X",
+      winner: null,
+      isGameActive: true,
+      winningLine: null,
+      isAiThinking: false,
+    })
+
+    setOnlineState({
+      mode: "create",
+      roomCode: "",
+      joinCode: "",
+      playerName: "",
+      room: null,
+      playerId: crypto.randomUUID(),
+      playerSymbol: null,
+      opponentConnected: false,
+      connectionStatus: "disconnected",
+    })
+
+    setGameMode("menu")
+  }
+
+  // Copy room code
+  const copyRoomCode = () => {
+    navigator.clipboard.writeText(onlineState.roomCode)
+  }
+
+  // Render appropriate screen
+  if (gameMode === "menu") {
+    return <MenuScreen onModeSelect={setGameMode} />
+  }
+
+  if (gameMode === "online") {
+    if (onlineState.mode === "create" || onlineState.mode === "join") {
+      return (
+        <OnlineSetupScreen
+          onlineMode={onlineState.mode}
+          setOnlineMode={(mode) => setOnlineState((prev) => ({ ...prev, mode }))}
+          playerName={onlineState.playerName}
+          setPlayerName={(name) => setOnlineState((prev) => ({ ...prev, playerName: name }))}
+          joinCode={onlineState.joinCode}
+          setJoinCode={(code) => setOnlineState((prev) => ({ ...prev, joinCode: code }))}
+          connectionStatus={onlineState.connectionStatus}
+          onCreateRoom={createRoom}
+          onJoinRoom={joinRoom}
+          onBack={backToMenu}
         />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+      )
+    }
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+    if (onlineState.mode === "waiting") {
+      return (
+        <WaitingRoomScreen
+          roomCode={onlineState.roomCode}
+          connectionStatus={onlineState.connectionStatus}
+          onBack={backToMenu}
+          onCopyRoomCode={copyRoomCode}
+        />
+      )
+    }
+  }
+
+  return (
+    <GameScreen
+      gameMode={gameMode}
+      gameState={gameState}
+      onlineState={onlineState}
+      onBack={backToMenu}
+      onReset={resetGame}
+      onCellClick={handleCellClick}
+    />
+  )
 }
