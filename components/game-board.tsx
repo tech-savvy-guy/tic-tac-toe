@@ -23,12 +23,12 @@ export function GameBoard({
 }: GameBoardProps) {
   return (
     <div className="relative">
-      <div className="grid grid-cols-3 gap-1 bg-muted/10 p-1">
+      <div className="grid grid-cols-3 gap-1 bg-border p-1 rounded-md">
         {board.map((cell, index) => (
           <button
             key={index}
-            className={`aspect-square bg-card flex items-center justify-center text-4xl font-extralight transition-all duration-200 hover:bg-muted/5 disabled:cursor-not-allowed focus:outline-none relative group ${
-              winningLine?.includes(index) ? "bg-muted/5" : ""
+            className={`aspect-square bg-background flex items-center justify-center text-4xl font-extralight transition-all duration-200 hover:bg-muted disabled:cursor-not-allowed focus:outline-none relative group ${
+              winningLine?.includes(index) ? "bg-muted" : ""
             }`}
             onClick={() => onCellClick(index)}
             disabled={!isGameActive || isAiThinking || !canMakeMove}
@@ -43,7 +43,7 @@ export function GameBoard({
               </span>
             )}
             {!cell && !isGameActive === false && isGameActive && !isAiThinking && canMakeMove && (
-              <span className="absolute inset-0 flex items-center justify-center text-muted-foreground/10 text-4xl font-extralight opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              <span className="absolute inset-0 flex items-center justify-center text-muted-foreground text-4xl font-extralight opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                 {currentPlayer}
               </span>
             )}

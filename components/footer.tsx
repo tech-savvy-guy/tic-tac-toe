@@ -1,8 +1,10 @@
 "use client"
 
+import { ThemeToggle } from "./theme-toggle"
+
 export function Footer() {
     return (
-        <footer className="fixed bottom-0 left-0 w-full py-3 px-6">
+        <footer className="fixed bottom-0 left-0 w-full py-3 px-6 pb-6 font-mono">
             <div className="max-w-screen-xl mx-auto flex items-center justify-center gap-3 text-xs text-muted-foreground">
                 <a
                     href="https://sohamdatta.com"
@@ -10,7 +12,7 @@ export function Footer() {
                     rel="noopener noreferrer"
                     className="font-light tracking-wider hover:text-foreground transition-colors duration-200"
                 >
-                    Soham Datta
+                    ~/ Soham Datta
                 </a>
                 <span>•</span>
                 <a
@@ -34,6 +36,9 @@ export function Footer() {
                 >
                     GitHub
                 </a>
+                <span>•</span>
+                <ThemeToggle />
+                /~
             </div>
         </footer>
     )

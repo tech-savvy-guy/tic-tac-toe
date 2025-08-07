@@ -15,10 +15,41 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Tic Tac Toe",
-  description: "A modern tic-tac-toe game built with v0",
+  title: {
+    default: "Tic Tac Toe",
+    template: "%s | Tic Tac Toe"
+  },
+  description: "A modern Tic Tac Toe game built with v0. Play against friends online or challenge the AI in this beautifully designed game.",
+  keywords: ["game", "tic-tac-toe", "multiplayer", "online game", "browser game", "v0"],
+  authors: [{ name: "tech-savvy-guy" }],
+  creator: "tech-savvy-guy",
+  publisher: "tech-savvy-guy",
+  robots: {
+    index: true,
+    follow: true,
+  },
   icons: {
     icon: "/favicon.ico",
+  },
+  openGraph: {
+    title: "Tic Tac Toe",
+    description: "A modern Tic Tac Toe game built with v0",
+    siteName: "Tic Tac Toe",
+    type: "website",
+    images: [
+      {
+        url: "/preview.png",
+        width: 1200,
+        height: 630,
+        alt: "Tic Tac Toe Preview"
+      }
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Tic Tac Toe",
+    description: "A modern Tic Tac Toe game built with v0",
+    images: ["/preview.png"],
   },
 };
 

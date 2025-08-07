@@ -1,12 +1,14 @@
 "use client"
 
+import { ThemeToggle } from "@/components/theme-toggle";
 import { useState, useEffect, useCallback } from "react"
+
 import { MenuScreen } from "@/components/menu-screen"
-import { OnlineSetupScreen } from "@/components/online-setup-screen"
-import { WaitingRoomScreen } from "@/components/waiting-room-screen"
 import { GameScreen } from "@/components/game-screen"
 import { OnlineGameService } from "@/services/online-game"
 import { makeAIMove, checkWinner } from "@/utils/game-logic"
+import { OnlineSetupScreen } from "@/components/online-setup-screen"
+import { WaitingRoomScreen } from "@/components/waiting-room-screen"
 import type { GameMode, Board, Player, GameState, OnlineState, Room } from "@/types/game"
 
 export default function TicTacToe() {
@@ -278,12 +280,13 @@ export default function TicTacToe() {
   }
 
   // Render appropriate screen
-  if (gameMode === "menu") {
-    return <MenuScreen onModeSelect={setGameMode} />
-  }
+  const renderScreen = () => {
+    if (gameMode === "menu") {
+      return <MenuScreen onModeSelect={setGameMode} />
+    }
 
-  if (gameMode === "online") {
-    if (onlineState.mode === "create" || onlineState.mode === "join") {
+    if (gameMode === "online") {
+      if (onlineState.mode === "create" || onlineState.mode === "join") {
       return (
         <OnlineSetupScreen
           onlineMode={onlineState.mode}
@@ -312,14 +315,21 @@ export default function TicTacToe() {
     }
   }
 
+    return (
+      <GameScreen
+        gameMode={gameMode}
+        gameState={gameState}
+        onlineState={onlineState}
+        onBack={backToMenu}
+        onReset={resetGame}
+        onCellClick={handleCellClick}
+      />
+    )
+  }
+
   return (
-    <GameScreen
-      gameMode={gameMode}
-      gameState={gameState}
-      onlineState={onlineState}
-      onBack={backToMenu}
-      onReset={resetGame}
-      onCellClick={handleCellClick}
-    />
+    <div className="relative">
+      {renderScreen()}
+    </div>
   )
 }
