@@ -72,36 +72,36 @@ export function GameScreen({ gameMode, gameState, onlineState, onBack, onReset, 
   }
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center p-8">
+    <div className="min-h-screen bg-background flex items-center justify-center p-8">
       <div className="w-full max-w-xs space-y-12 animate-in fade-in duration-500">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <button onClick={onBack} className="p-2 hover:bg-black/5 rounded-full transition-all duration-200 group">
-            <ArrowLeft className="h-5 w-5 text-black/60 group-hover:text-black transition-colors" />
+          <button onClick={onBack} className="p-2 hover:bg-muted/5 rounded-full transition-all duration-200 group">
+            <ArrowLeft className="h-5 w-5 text-muted-foreground group-hover:text-foreground transition-colors" />
           </button>
           <div className="text-center">
-            <h2 className="text-sm font-light tracking-widest text-black/60 uppercase">{getGameTitle()}</h2>
+            <h2 className="text-sm font-light tracking-widest text-muted-foreground uppercase">{getGameTitle()}</h2>
             {gameMode === "online" && (
               <div className="flex items-center justify-center space-x-1 mt-1">
                 {connectionStatus === "connected" ? (
-                  <Wifi className="h-3 w-3 text-green-600" />
+                  <Wifi className="h-3 w-3 text-success" />
                 ) : (
-                  <WifiOff className="h-3 w-3 text-red-600" />
+                  <WifiOff className="h-3 w-3 text-error" />
                 )}
-                <span className="text-xs text-black/40">
+                <span className="text-xs text-muted-foreground/40">
                   {playerSymbol} • {roomCode}
                 </span>
               </div>
             )}
           </div>
-          <button onClick={onReset} className="p-2 hover:bg-black/5 rounded-full transition-all duration-200 group">
-            <RotateCcw className="h-5 w-5 text-black/60 group-hover:text-black transition-colors" />
+          <button onClick={onReset} className="p-2 hover:bg-muted/5 rounded-full transition-all duration-200 group">
+            <RotateCcw className="h-5 w-5 text-muted-foreground group-hover:text-foreground transition-colors" />
           </button>
         </div>
 
         {/* Game Status */}
         <div className="text-center h-8 flex items-center justify-center">
-          <div className="text-black/40 font-light tracking-wide">{getGameStatus()}</div>
+          <div className="text-muted-foreground/40 font-light tracking-wide">{getGameStatus()}</div>
         </div>
 
         {/* Game Board */}
@@ -120,13 +120,13 @@ export function GameScreen({ gameMode, gameState, onlineState, onBack, onReset, 
           <div className="space-y-3 animate-in slide-in-from-bottom-4 duration-500">
             <button
               onClick={onReset}
-              className="w-full py-3 bg-black text-white font-light tracking-wide hover:bg-black/80 transition-all duration-200"
+              className="w-full py-3 bg-foreground text-background font-light tracking-wide hover:bg-foreground/80 transition-all duration-200"
             >
               PLAY AGAIN
             </button>
             <button
               onClick={onBack}
-              className="w-full py-3 text-black font-light tracking-wide hover:bg-black/5 transition-all duration-200 border border-black/20"
+              className="w-full py-3 text-foreground font-light tracking-wide hover:bg-muted/5 transition-all duration-200 border border-border/20"
             >
               MENU
             </button>
