@@ -28,7 +28,7 @@ export function OnlineSetupScreen({
   onBack,
 }: OnlineSetupScreenProps) {
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-8">
+    <div className="min-h-screen bg-background flex items-center justify-center px-4 py-8 sm:p-8">
       <div className="w-full max-w-xs space-y-8 animate-in fade-in duration-500">
         <div className="flex items-center justify-between">
           <button onClick={onBack} className="p-2 hover:bg-muted/5 rounded-full transition-all duration-200 group">

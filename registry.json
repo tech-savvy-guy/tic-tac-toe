@@ -1,13 +1,13 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry.json",
   "name": "tic-tac-toe",
-  "homepage": "https://tic-tac-toe-game.vercel.app",
+  "homepage": "https://tic-tac-toe-by-v0.vercel.app",
   "items": [
     {
       "name": "tic-tac-toe-game",
       "type": "registry:block",
-      "title": "Tic Tac Toe Game",
-      "description": "A modern Tic Tac Toe game built with v0.",
+      "title": "tic-tac-toe",
+      "description": "A modern tic-tac-toe game built with v0.",
       "files": [
         {
           "path": "components/game-board.tsx",
@@ -64,6 +64,21 @@
         {
           "path": "utils/game-logic.ts",
           "type": "registry:lib"
+        },
+        {
+          "path": "scripts/setup-database.sql",
+          "type": "registry:file",
+          "target": "scripts/setup-database.sql"
+        },
+        {
+          "path": "scripts/setup.sh",
+          "type": "registry:file",
+          "target": "scripts/setup.sh"
+        },
+        {
+          "path": "docs/setup.md",
+          "type": "registry:file",
+          "target": "docs/setup.md"
         }
       ],
       "dependencies": [

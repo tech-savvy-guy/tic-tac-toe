@@ -1,6 +1,5 @@
 "use client"
 
-import { ThemeToggle } from "@/components/theme-toggle";
 import { useState, useEffect, useCallback } from "react"
 
 import { MenuScreen } from "@/components/menu-screen"

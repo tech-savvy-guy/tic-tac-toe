@@ -72,10 +72,10 @@ export function GameScreen({ gameMode, gameState, onlineState, onBack, onReset, 
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-8">
-      <div className="w-full max-w-xs space-y-12 animate-in fade-in duration-500">
+    <div className="min-h-screen bg-background flex items-center justify-center px-4 py-8 sm:p-8">
+      <div className="w-full max-w-xs space-y-8 animate-in fade-in duration-500">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between select-none">
           <button onClick={onBack} className="p-2 hover:bg-muted/5 rounded-full transition-all duration-200 group">
             <ArrowLeft className="h-5 w-5 text-muted-foreground group-hover:text-foreground transition-colors" />
           </button>
@@ -100,7 +100,7 @@ export function GameScreen({ gameMode, gameState, onlineState, onBack, onReset, 
         </div>
 
         {/* Game Status */}
-        <div className="text-center h-8 flex items-center justify-center">
+        <div className="text-center h-8 flex items-center justify-center select-none">
           <div className="text-muted-foreground/40 font-light tracking-wide">{getGameStatus()}</div>
         </div>
 
@@ -126,7 +126,7 @@ export function GameScreen({ gameMode, gameState, onlineState, onBack, onReset, 
             </button>
             <button
               onClick={onBack}
-              className="w-full py-3 text-foreground font-light tracking-wide hover:bg-muted/5 transition-all duration-200 border border-border/20"
+              className="w-full py-3 text-foreground font-light tracking-wide hover:bg-muted/5 transition-all duration-200 border border-foreground"
             >
               MENU
             </button>

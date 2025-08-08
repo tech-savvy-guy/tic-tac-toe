@@ -1,36 +1,56 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## tic‑tac‑toe
 
-## Getting Started
+A minimal NextJS app with single player, local multiplayer, and Supabase‑powered online multiplayer.
 
-First, run the development server:
+[![Preview](./public/preview.png)](https://tic-tac-toe-by-v0.vercel.app/)
+
+### Prerequisites
+- Node 18+ and pnpm
+- A Supabase project (for online mode)
+
+### Setup
+1) Install dependencies:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2) Create `.env` in the project root:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+3) Create the `rooms` table for online play (choose one):
+- In Supabase Dashboard → SQL editor, run the contents of `scripts/setup-database.sql`.
+- Or set `DATABASE_URL` and run:
 
-## Learn More
+```bash
+chmod +x scripts/setup.sh
+./scripts/setup.sh
+```
+**Important:**  
+Be sure to enable **Realtime** for your Supabase project.  
+You can do this from the Supabase Dashboard under **Database > Replication > Realtime**.
 
-To learn more about Next.js, take a look at the following resources:
+### Develop
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+pnpm dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+App runs on http://localhost:3000.
 
-## Deploy on Vercel
+### Build & Start
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+pnpm build
+pnpm start
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Scripts
+- `pnpm dev` – start dev server
+- `pnpm build` – build production bundle
+- `pnpm start` – run production server
+- `pnpm lint` – run linting

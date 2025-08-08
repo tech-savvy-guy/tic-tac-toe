@@ -23,7 +23,7 @@ export function GameBoard({
 }: GameBoardProps) {
   return (
     <div className="relative">
-      <div className="grid grid-cols-3 gap-1 bg-border p-1 rounded-md">
+      <div className="grid grid-cols-3 gap-1 bg-border p-1 rounded-md select-none">
         {board.map((cell, index) => (
           <button
             key={index}
