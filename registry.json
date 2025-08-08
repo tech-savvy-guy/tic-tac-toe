@@ -1,0 +1,78 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "tic-tac-toe",
+  "homepage": "https://tic-tac-toe-game.vercel.app",
+  "items": [
+    {
+      "name": "tic-tac-toe-game",
+      "type": "registry:block",
+      "title": "Tic Tac Toe Game",
+      "description": "A modern Tic Tac Toe game built with v0.",
+      "files": [
+        {
+          "path": "components/game-board.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "components/game-screen.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "components/menu-screen.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "components/online-setup-screen.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "components/waiting-room-screen.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "components/theme-provider.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "components/theme-toggle.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "components/footer.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "constants/game.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "lib/supabase.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "lib/utils.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "services/online-game.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "types/game.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "utils/game-logic.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "dependencies": [
+        "@supabase/supabase-js",
+        "next-themes",
+        "lucide-react",
+        "clsx",
+        "tailwind-merge"
+      ]
+    }
+  ]
+}
