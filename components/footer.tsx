@@ -17,7 +17,7 @@ export function Footer() {
                 </a>
                 <span>•</span>
                 <a
-                    href="https://v0.dev"
+                    href="https://v0.dev/chat/api/open?title=tic-tac-toe&prompt=Build+a+sleek+tic-tac-toe+game+using+Next.js+App+Router+and+Supabase+Realtime%2C+supporting+local+and+multiplayer+%28online%2Foffline%29+gameplay.&url=https%3A%2F%2Ftic-tac-toe-by-v0.vercel.app%2Ftic-tac-toe-game.json"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="hover:text-foreground/75 transition-colors duration-200"
