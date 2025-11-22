@@ -69,43 +69,57 @@ export function OnlineSetupScreen({
             </button>
           </div>
 
-          <div className="space-y-4">
-            <input
-              type="text"
-              placeholder="YOUR NAME"
-              value={playerName}
-              onChange={(e) => setPlayerName(e.target.value)}
-              className="w-full py-3 px-0 bg-transparent border border-border focus:border-foreground outline-none font-light tracking-wide placeholder:text-muted-foreground/40 text-center"
-              maxLength={20}
-            />
-
-            {onlineMode === "join" && (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault()
+              if (
+                playerName.trim() &&
+                (onlineMode === "create" || (onlineMode === "join" && joinCode.trim())) &&
+                connectionStatus !== "connecting"
+              ) {
+                onlineMode === "create" ? onCreateRoom() : onJoinRoom()
+              }
+            }}
+            className="space-y-4"
+          >
+            <div className="space-y-4">
               <input
                 type="text"
-                placeholder="ROOM CODE"
-                value={joinCode}
-                onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
-                className="w-full py-3 px-0 bg-transparent border border-border focus:border-foreground outline-none font-light tracking-widest placeholder:text-muted-foreground/40 text-center"
-                maxLength={6}
+                placeholder="YOUR NAME"
+                value={playerName}
+                onChange={(e) => setPlayerName(e.target.value)}
+                className="w-full py-3 px-0 bg-transparent border border-border focus:border-foreground outline-none font-light tracking-wide placeholder:text-muted-foreground/40 text-center"
+                maxLength={20}
               />
-            )}
-          </div>
 
-          <button
-            onClick={onlineMode === "create" ? onCreateRoom : onJoinRoom}
-            disabled={
-              !playerName.trim() || (onlineMode === "join" && !joinCode.trim()) || connectionStatus === "connecting"
-            }
-            className="w-full py-4 bg-foreground text-background font-light tracking-wide hover:bg-foreground/80 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {connectionStatus === "connecting"
-              ? onlineMode === "create"
-                ? "CREATING..."
-                : "JOINING..."
-              : onlineMode === "create"
-                ? "CREATE ROOM"
-                : "JOIN ROOM"}
-          </button>
+              {onlineMode === "join" && (
+                <input
+                  type="text"
+                  placeholder="ROOM CODE"
+                  value={joinCode}
+                  onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
+                  className="w-full py-3 px-0 bg-transparent border border-border focus:border-foreground outline-none font-light tracking-widest placeholder:text-muted-foreground/40 text-center"
+                  maxLength={6}
+                />
+              )}
+            </div>
+
+            <button
+              type="submit"
+              disabled={
+                !playerName.trim() || (onlineMode === "join" && !joinCode.trim()) || connectionStatus === "connecting"
+              }
+              className="w-full py-4 bg-foreground text-background font-light tracking-wide hover:bg-foreground/80 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {connectionStatus === "connecting"
+                ? onlineMode === "create"
+                  ? "CREATING..."
+                  : "JOINING..."
+                : onlineMode === "create"
+                  ? "CREATE ROOM"
+                  : "JOIN ROOM"}
+            </button>
+          </form>
         </div>
       </div>
     </div>

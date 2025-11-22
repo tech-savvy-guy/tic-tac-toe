@@ -35,5 +35,6 @@ export interface OnlineState {
   playerId: string
   playerSymbol: Player
   opponentConnected: boolean
+  opponentDisconnected: boolean
   connectionStatus: ConnectionStatus
 }

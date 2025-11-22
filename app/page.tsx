@@ -30,13 +30,56 @@ export default function TicTacToe() {
     joinCode: "",
     playerName: "",
     room: null,
-    playerId: crypto.randomUUID(),
+    playerId: "",  // Initialize empty, will set in useEffect
     playerSymbol: null,
     opponentConnected: false,
+    opponentDisconnected: false,
     connectionStatus: "disconnected",
   })
 
   const [onlineService] = useState(() => new OnlineGameService())
+
+  // Initialize player ID and name on mount
+  useEffect(() => {
+    let storedId = localStorage.getItem("tic-tac-toe-player-id")
+    if (!storedId) {
+      storedId = crypto.randomUUID()
+      localStorage.setItem("tic-tac-toe-player-id", storedId)
+    }
+    
+    const storedName = localStorage.getItem("tic-tac-toe-player-name") || ""
+    
+    setOnlineState(prev => ({ 
+      ...prev, 
+      playerId: storedId!,
+      playerName: storedName
+    }))
+  }, [])
+
+  // Handle opponent disconnection
+  const handleOpponentDisconnect = useCallback(() => {
+    setOnlineState((prev) => {
+      // Only set disconnected if we were actually playing
+      if (prev.mode === "playing" && prev.opponentConnected) {
+        return {
+          ...prev,
+          opponentDisconnected: true,
+          opponentConnected: false,
+        }
+      }
+      return prev
+    })
+    // Game state is preserved automatically - we don't clear it
+  }, [])
+
+  // Handle opponent reconnection
+  const handleOpponentReconnect = useCallback(() => {
+    setOnlineState((prev) => ({
+      ...prev,
+      opponentDisconnected: false,
+      opponentConnected: true,
+    }))
+  }, [])
 
   // Handle room updates from Supabase
   const handleRoomUpdate = useCallback((updatedRoom: Room) => {
@@ -46,6 +89,13 @@ export default function TicTacToe() {
       // Check if second player joined and we're the host waiting
       if (updatedRoom.status === "playing" && prev.mode === "waiting" && updatedRoom.player2_id) {
         newState.mode = "playing"
+        newState.opponentConnected = true
+        newState.opponentDisconnected = false
+      }
+
+      // If opponent reconnected (room has both players again)
+      if (updatedRoom.status === "playing" && prev.opponentDisconnected && updatedRoom.player1_id && updatedRoom.player2_id) {
+        newState.opponentDisconnected = false
         newState.opponentConnected = true
       }
 
@@ -100,7 +150,14 @@ export default function TicTacToe() {
       }))
 
       // Subscribe to room updates
-      onlineService.subscribeToRoom(room.id, handleRoomUpdate, handleConnectionStatusChange)
+      onlineService.subscribeToRoom(
+        room.id, 
+        handleRoomUpdate, 
+        handleConnectionStatusChange,
+        onlineState.playerId,
+        handleOpponentDisconnect,
+        handleOpponentReconnect
+      )
 
       console.log("Room created and subscribed:", room.id) // Debug log
     } catch (error) {
@@ -118,16 +175,32 @@ export default function TicTacToe() {
     try {
       const room = await onlineService.joinRoom(onlineState.joinCode, onlineState.playerId, onlineState.playerName)
 
+      // Determine player symbol based on which player they are
+      const isPlayer1 = room.player1_id === onlineState.playerId
+      const playerSymbol: Player = isPlayer1 ? "X" : "O"
+      const opponentConnected = !!(room.player1_id && room.player2_id)
+
       setOnlineState((prev) => ({
         ...prev,
         roomCode: onlineState.joinCode.toUpperCase(),
         room,
-        playerSymbol: "O",
-        mode: "playing",
-        opponentConnected: true,
+        playerSymbol,
+        mode: room.status === "playing" ? "playing" : "waiting",
+        opponentConnected,
+        opponentDisconnected: false,
       }))
 
-      onlineService.subscribeToRoom(room.id, handleRoomUpdate, handleConnectionStatusChange)
+      onlineService.subscribeToRoom(
+        room.id, 
+        handleRoomUpdate, 
+        handleConnectionStatusChange,
+        onlineState.playerId,
+        handleOpponentDisconnect,
+        handleOpponentReconnect
+      )
+
+      // Immediately sync game state with the joined room
+      handleRoomUpdate(room)
     } catch (error) {
       console.error("Error joining room:", error)
       alert(error instanceof Error ? error.message : "Failed to join room")
@@ -137,7 +210,8 @@ export default function TicTacToe() {
 
   // Make online move
   const makeOnlineMove = async (index: number) => {
-    if (!onlineState.room || !onlineState.playerSymbol || gameState.currentPlayer !== onlineState.playerSymbol) return
+    // Don't allow moves if opponent is disconnected
+    if (!onlineState.room || !onlineState.playerSymbol || gameState.currentPlayer !== onlineState.playerSymbol || onlineState.opponentDisconnected) return
 
     const newBoard = [...gameState.board]
     newBoard[index] = onlineState.playerSymbol
@@ -258,15 +332,19 @@ export default function TicTacToe() {
       isAiThinking: false,
     })
 
+    // Preserve playerName from localStorage when going back to menu
+    const storedName = localStorage.getItem("tic-tac-toe-player-name") || ""
+
     setOnlineState({
       mode: "create",
       roomCode: "",
       joinCode: "",
-      playerName: "",
+      playerName: storedName,
       room: null,
-      playerId: crypto.randomUUID(),
+      playerId: onlineState.playerId || crypto.randomUUID(),
       playerSymbol: null,
       opponentConnected: false,
+      opponentDisconnected: false,
       connectionStatus: "disconnected",
     })
 
@@ -291,7 +369,10 @@ export default function TicTacToe() {
           onlineMode={onlineState.mode}
           setOnlineMode={(mode) => setOnlineState((prev) => ({ ...prev, mode }))}
           playerName={onlineState.playerName}
-          setPlayerName={(name) => setOnlineState((prev) => ({ ...prev, playerName: name }))}
+          setPlayerName={(name) => {
+            setOnlineState((prev) => ({ ...prev, playerName: name }))
+            localStorage.setItem("tic-tac-toe-player-name", name)
+          }}
           joinCode={onlineState.joinCode}
           setJoinCode={(code) => setOnlineState((prev) => ({ ...prev, joinCode: code }))}
           connectionStatus={onlineState.connectionStatus}

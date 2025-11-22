@@ -2,6 +2,7 @@
 
 import { ArrowLeft, RotateCcw, Wifi, WifiOff } from "lucide-react"
 import { GameBoard } from "./game-board"
+import { DisconnectDialog } from "./disconnect-dialog"
 import type { GameMode, GameState, OnlineState } from "@/types/game"
 
 interface GameScreenProps {
@@ -15,11 +16,16 @@ interface GameScreenProps {
 
 export function GameScreen({ gameMode, gameState, onlineState, onBack, onReset, onCellClick }: GameScreenProps) {
   const { board, currentPlayer, winner, isGameActive, winningLine, isAiThinking } = gameState
-  const { room, playerSymbol, connectionStatus, roomCode } = onlineState
+  const { room, playerSymbol, connectionStatus, roomCode, opponentDisconnected } = onlineState
 
   const getOpponentName = () => {
     if (!room) return ""
     return room.player1_id === onlineState.playerId ? room.player2_name : room.player1_name
+  }
+
+  const getOpponentNameForDialog = () => {
+    const name = getOpponentName()
+    return name || "Your opponent"
   }
 
   const getGameTitle = () => {
@@ -66,6 +72,8 @@ export function GameScreen({ gameMode, gameState, onlineState, onBack, onReset, 
 
   const canMakeMove = () => {
     if (gameMode === "online") {
+      // Don't allow moves if opponent is disconnected
+      if (opponentDisconnected) return false
       return currentPlayer === playerSymbol
     }
     return true
@@ -73,6 +81,12 @@ export function GameScreen({ gameMode, gameState, onlineState, onBack, onReset, 
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4 py-8 sm:p-8">
+      <DisconnectDialog 
+        isOpen={gameMode === "online" && opponentDisconnected && !!room}
+        opponentName={getOpponentNameForDialog()}
+        roomCode={roomCode}
+        connectionStatus={connectionStatus}
+      />
       <div className="w-full max-w-xs space-y-8 animate-in fade-in duration-500">
         {/* Header */}
         <div className="flex items-center select-none">
