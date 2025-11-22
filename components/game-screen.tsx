@@ -75,11 +75,11 @@ export function GameScreen({ gameMode, gameState, onlineState, onBack, onReset, 
     <div className="min-h-screen bg-background flex items-center justify-center px-4 py-8 sm:p-8">
       <div className="w-full max-w-xs space-y-8 animate-in fade-in duration-500">
         {/* Header */}
-        <div className="flex items-center justify-between select-none">
+        <div className="flex items-center select-none">
           <button onClick={onBack} className="p-2 hover:bg-muted/5 rounded-full transition-all duration-200 group">
             <ArrowLeft className="h-5 w-5 text-muted-foreground group-hover:text-foreground transition-colors" />
           </button>
-          <div className="text-center">
+          <div className="flex-1 text-center">
             <h2 className="text-sm font-light tracking-widest text-muted-foreground uppercase">{getGameTitle()}</h2>
             {gameMode === "online" && (
               <div className="flex items-center justify-center space-x-1 mt-1">
@@ -94,9 +94,13 @@ export function GameScreen({ gameMode, gameState, onlineState, onBack, onReset, 
               </div>
             )}
           </div>
-          <button onClick={onReset} className="p-2 hover:bg-muted/5 rounded-full transition-all duration-200 group">
-            <RotateCcw className="h-5 w-5 text-muted-foreground group-hover:text-foreground transition-colors" />
-          </button>
+          {gameMode !== "online" ? (
+            <button onClick={onReset} className="p-2 hover:bg-muted/5 rounded-full transition-all duration-200 group">
+              <RotateCcw className="h-5 w-5 text-muted-foreground group-hover:text-foreground transition-colors" />
+            </button>
+          ) : (
+            <div className="w-9 h-9"></div>
+          )}
         </div>
 
         {/* Game Status */}
@@ -118,12 +122,14 @@ export function GameScreen({ gameMode, gameState, onlineState, onBack, onReset, 
         {/* Action Buttons */}
         {winner && (
           <div className="space-y-3 animate-in slide-in-from-bottom-4 duration-500">
-            <button
-              onClick={onReset}
-              className="w-full py-3 bg-foreground text-background font-light tracking-wide hover:bg-foreground/80 transition-all duration-200"
-            >
-              PLAY AGAIN
-            </button>
+            {gameMode !== "online" && (
+              <button
+                onClick={onReset}
+                className="w-full py-3 bg-foreground text-background font-light tracking-wide hover:bg-foreground/80 transition-all duration-200"
+              >
+                PLAY AGAIN
+              </button>
+            )}
             <button
               onClick={onBack}
               className="w-full py-3 text-foreground font-light tracking-wide hover:bg-muted/5 transition-all duration-200 border border-foreground"
