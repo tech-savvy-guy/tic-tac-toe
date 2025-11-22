@@ -17,13 +17,13 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Tic Tac Toe",
+    default: "Tic Tac Toe | Soham Datta",
     template: "%s | Tic Tac Toe"
   },
   description: "A modern Tic Tac Toe game built with v0. Play against friends online or challenge the AI in this beautifully designed game.",
   keywords: ["game", "tic-tac-toe", "multiplayer", "online game", "browser game", "v0"],
   authors: [{ name: "tech-savvy-guy" }],
-  creator: "tech-savvy-guy",
+  creator: "Soham Datta",
   publisher: "tech-savvy-guy",
   robots: {
     index: true,
@@ -33,9 +33,9 @@ export const metadata: Metadata = {
     icon: "/favicon.ico",
   },
   openGraph: {
-    title: "Tic Tac Toe",
-    description: "A modern Tic Tac Toe game built with v0",
-    siteName: "Tic Tac Toe",
+    title: "Tic Tac Toe | Soham Datta",
+    description: "A modern Tic Tac Toe game built with v0. Play against friends online or challenge the AI in this beautifully designed game.",
+    siteName: "Tic Tac Toe | Soham Datta",
     type: "website",
     images: [
       {
@@ -48,8 +48,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Tic Tac Toe",
-    description: "A modern Tic Tac Toe game built with v0",
+    title: "Tic Tac Toe | Soham Datta",
+    description: "A modern Tic Tac Toe game built with v0. Play against friends online or challenge the AI in this beautifully designed game.",
     images: ["/preview.png"],
   },
 };

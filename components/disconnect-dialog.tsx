@@ -1,8 +1,8 @@
 "use client"
 
-import { Copy, Check, Wifi, WifiOff, Users } from "lucide-react"
 import { useState } from "react"
 import type { ConnectionStatus } from "@/types/game"
+import { Copy, Check, Wifi, WifiOff } from "lucide-react"
 
 interface DisconnectDialogProps {
   isOpen: boolean

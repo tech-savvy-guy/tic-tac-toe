@@ -1,8 +1,8 @@
 "use client"
 
-import { ArrowLeft, Copy, Check, Users, Wifi, WifiOff } from "lucide-react"
 import { useState } from "react"
 import type { ConnectionStatus } from "@/types/game"
+import { ArrowLeft, Copy, Check, Wifi, WifiOff } from "lucide-react"
 
 interface WaitingRoomScreenProps {
   roomCode: string

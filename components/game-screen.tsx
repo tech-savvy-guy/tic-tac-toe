@@ -1,9 +1,10 @@
 "use client"
 
 import { ArrowLeft, RotateCcw, Wifi, WifiOff } from "lucide-react"
-import { GameBoard } from "./game-board"
-import { DisconnectDialog } from "./disconnect-dialog"
 import type { GameMode, GameState, OnlineState } from "@/types/game"
+
+import { GameBoard } from "@/components/game-board"
+import { DisconnectDialog } from "@/components/disconnect-dialog"
 
 interface GameScreenProps {
   gameMode: GameMode
